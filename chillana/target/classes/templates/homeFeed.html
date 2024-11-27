@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Home Feed</title>
+    <link rel="stylesheet" th:href="@{/homefeed.css}"/>
+</head>
+<body>
+<h1>Home Feed</h1>
+<!-- Search Bar -->
+<div>
+    <input type="text" id="searchInput" placeholder="Search for users...">
+    <button onclick="searchUsers()">Search</button>
+</div>
+
+<!-- Modal for displaying search results -->
+<div id="searchResultsModal" style="display:none;">
+    <div>
+        <h3>Search Results</h3>
+        <ul id="resultsList"></ul>
+        <button onclick="closeModal()">Close</button>
+    </div>
+</div>
+
+
+<div class="feed-container">
+    <div th:each="post : ${posts}" class="post-card">
+        <div class="post-header">
+            <a th:if="${post.user != null and post.user.userProfileModel != null}"
+               th:href="@{/visitProfile/{username}(username=${post.user.username})}">
+                <img th:src="'data:image/jpeg;base64,' + ${post.user.userProfileModel.profileImageBase64}"
+                     alt="Profile Picture" class="profile-pic"/>
+            </a>
+            </a>
+            <a th:if="${post.user != null}"
+               th:href="@{/visitProfile/{username}(username=${post.user.username})}">
+                <span class="username" th:text="${post.user.username}"></span>
+            </a>
+        </div>
+        <div class="post-content">
+            <p th:text="${post.caption}"></p>
+            <img th:if="${post.postImg != null}"
+                 th:src="'data:image/jpeg;base64,' + ${post.getPostImageBase64()}"
+                 alt="Post Image" class="post-image"/>
+        </div>
+        <form th:action="@{/post/{id}/like(id=${post.id})}" method="post">
+            <button type="submit">Like</button>
+        </form>
+        <form th:action="@{|/${post.id}/comment|}" method="post">
+            <input type="text" name="comment" placeholder="Add a comment..." required/>
+            <button type="submit">Comment</button>
+        </form>
+    </div>
+</div>
+<script th:src="@{/homeFeed.js}"></script>
+</body>
+</html>
